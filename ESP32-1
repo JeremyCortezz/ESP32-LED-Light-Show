@@ -1,0 +1,70 @@
+// The following GPIO Pins scan be used for LED's
+// 4, 5, 13, 14, 16, 17, 18, 19, 21, 22, 23, 25, 26, 27, 32, and 33
+// To Change brightness you must use analogWrite(LED1,brightness);
+// The following GPIO Pins can be used for analogWrite: 0, 2, 4, 5, 12-19, 21-23, 25, 26, 27, 32, 33
+
+
+// Creating Global Variables that can be assigned to each LED
+int LEDChain1 = 2;
+int LEDChain2 = 4;
+int LED3 = 5;
+int LED4 = 13;
+int bumpkinLED = 14;
+int LED6 = 16;
+int LED7 = 17;
+const int Button = 18;
+
+
+void setup() {
+ // put your setup code here, to run once:
+ Serial.begin(115200);
+ pinMode(LEDChain1, OUTPUT);
+ pinMode(LEDChain2, OUTPUT);
+ pinMode(Button, INPUT_PULLUP);
+
+
+ pinMode(bumpkinLED, OUTPUT);
+ digitalWrite(bumpkinLED, HIGH);
+ /* Example Code to Use MultiColored Diode (3 GPIO Pins are required & Ground)
+ Values can range from 0-255
+ const int Red = "Pin #";
+ const int Green = "Pin #";
+ const int Blue = "Pin #";
+ analogWrite(Red, 0);
+ analogWrite(Green, 0);
+ analogWrite(Blue, 0);
+ */
+  //dlgitalWrite(LED2, 100);
+ //digitalWrite(LED3, 100);
+ //digitalWrite(LED4, 100);
+ //dlgitalWrite(LED5, 100);
+ //digitalWrite(LED6, 100);
+}
+
+void loop() {
+ // put your main code here, to run repeatedly:
+   // Iteration the button is only active when the button is held
+ if (digitalRead(Button) == 0) {
+   // For loop increasing the brightness from 1 to 100 for Chain1 LEDS
+   for (int i = 0; i < 120; i++){
+     analogWrite(LEDChain1, i);
+     analogWrite(LEDChain2, 0);
+     delay(1);
+   }
+   delay(80);
+   analogWrite(LEDChain1, 0);
+  
+   // 2nd For loop doing the same thing but for Chain2 LEDS
+   for (int i = 0; i < 120; i++){
+     analogWrite(LEDChain2, i);
+     analogWrite(LEDChain1, 0);
+     delay(1);
+   }
+     delay(80);
+     analogWrite(LEDChain2, 0);
+ }
+}
+
+
+
+
