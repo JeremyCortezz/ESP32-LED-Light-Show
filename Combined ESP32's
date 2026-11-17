@@ -1,0 +1,107 @@
+int LEDChain1 = 2;
+int LEDChain2 = 4;
+int LED3 = 5;
+int LED4 = 13;
+int bumpkinLED = 14;
+int LED6 = 16;
+int LED7 = 17;
+const int Button = 18;
+
+// Bumpkin animation variables
+int bumpkinBrightness = 0;
+int bumpkinDirection = 1;
+unsigned long previousBumpkinMillis = 0;
+
+// LED chain animation variables
+int chainBrightness = 0;
+int chainState = 0;
+unsigned long previousChainMillis = 0;
+
+void setup() {
+ Serial.begin(115200);
+
+ pinMode(LEDChain1, OUTPUT);
+ pinMode(LEDChain2, OUTPUT);
+ pinMode(bumpkinLED, OUTPUT);
+ pinMode(Button, INPUT_PULLUP);
+
+ analogWrite(LEDChain1, 0);
+ analogWrite(LEDChain2, 0);
+ analogWrite(bumpkinLED, 0);
+}
+
+void loop() {
+ unsigned long currentMillis = millis();
+
+ // 1. BUMPKIN: continuously fade up and down
+ if (currentMillis - previousBumpkinMillis >= 10) {
+   previousBumpkinMillis = currentMillis;
+
+   bumpkinBrightness += bumpkinDirection;
+
+   if (bumpkinBrightness >= 100) {
+     bumpkinBrightness = 100;
+     bumpkinDirection = -1;
+   }
+
+   if (bumpkinBrightness <= 0) {
+     bumpkinBrightness = 0;
+     bumpkinDirection = 1;
+   }
+
+   analogWrite(bumpkinLED, bumpkinBrightness);
+ }
+
+ // 2. BUTTON: continuously check whether it is pressed
+ if (digitalRead(Button) == LOW && chainState == 0) {
+   chainState = 1;
+   chainBrightness = 0;
+   previousChainMillis = currentMillis;
+ }
+
+ // 3. LED CHAINS: animate without blocking the Bumpkin
+ if (currentMillis - previousChainMillis >= 10) {
+   previousChainMillis = currentMillis;
+
+   // State 0: wait for button
+   if (chainState == 0) {
+     analogWrite(LEDChain1, 0);
+     analogWrite(LEDChain2, 0);
+   }
+
+   // State 1: fade Chain 1 up
+   else if (chainState == 1) {
+     chainBrightness++;
+     analogWrite(LEDChain1, chainBrightness);
+     analogWrite(LEDChain2, 0);
+
+     if (chainBrightness >= 100) {
+       chainState = 2;
+     }
+   }
+
+   // State 2: turn Chain 1 off
+   else if (chainState == 2) {
+     analogWrite(LEDChain1, 0);
+     chainBrightness = 0;
+     chainState = 3;
+   }
+
+   // State 3: fade Chain 2 up
+   else if (chainState == 3) {
+     chainBrightness++;
+     analogWrite(LEDChain2, chainBrightness);
+     analogWrite(LEDChain1, 0);
+
+     if (chainBrightness >= 100) {
+       chainState = 4;
+     }
+   }
+
+   // State 4: turn Chain 2 off
+   else if (chainState == 4) {
+     analogWrite(LEDChain2, 0);
+     chainState = 0;
+   }
+ }
+}
