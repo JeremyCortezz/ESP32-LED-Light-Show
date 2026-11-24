@@ -1,4 +1,6 @@
 // Code 2
+// Setup the following Pins: 5 & 14 to have singular LED's
+
 const int ledPin = 5;
 const int NosePin = 14;
 const int bpm = 167;
